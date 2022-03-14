@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="build" default="distjar">
+
+  <!-- =========================================================================
+    properties
+    nastaveni prekladu - zdrojove a cilove adresare
+  ========================================================================== -->
+	
+  <property name="app.name" value="Intersection" />	
+
+  <property name="src.dir" value="./src" />
+  <property name="build.dir" value="./bin" />	
+  <property name="doc.dir" value="./doc" />	
+  <property name="jar.dir" value="." />
+  <property name="images.dir" value="./${build.dir}/images" />
+  
+  <property name="bin.jar.file" value="Intersection.jar" />
+
+  <property name="main-class" value="BasicDrawing" />
+
+  <path id="classpath">
+    <pathelement location="${build.dir}" />    
+  </path>
+  <!-- =========================================================================
+    target: clean
+    smaze vsechny vytvorene soubory - prelozene tridy, dokumentaci
+    vytvoreny jar nemaze
+  ========================================================================== -->
+  <target name="clean">
+    <delete dir="${build.dir}" />
+    <delete dir="${bin.dir}" />
+  	<delete dir="${doc.dir}" />  	
+  </target>
+
+  <!-- =========================================================================
+    target: compile
+    prelozi aplikaci
+      zdrojove soubory v adresari src.dir
+      prelozene ulozi do adresare build.dir
+      (cesty nastavene v properties)
+  ========================================================================== -->
+  <target name="compile" >
+    <mkdir dir="${build.dir}" />
+    <javac srcdir="${src.dir}" destdir="${build.dir}" compiler="javac1.5" encoding="utf-8">
+      <classpath refid="classpath" />
+    </javac>
+	
+	<copy todir="${images.dir}">
+      <fileset dir="images"/>
+    </copy>
+  </target>
+
+  <!-- =========================================================================
+    target: run
+    spusti prelozeny program, pokud je potreba provede preklad
+  ========================================================================== -->
+  <target name="run" depends="compile">
+    <java classname="${main-class}" fork="true" dir="${build.dir}">
+      <classpath refid="classpath" />
+    </java>
+  </target>
+
+  <!-- =========================================================================
+    target: distjar
+    vytvori JAR soubor s programem a ulozi ho do adresare jar.dir
+  ========================================================================== -->
+  <target name="distjar" depends="compile, javadoc">
+    <mkdir dir="${jar.dir}" />
+    <copy todir="${build.dir}/doc">
+          <fileset dir="${doc.dir}"/>
+    </copy>
+    <copy todir="${build.dir}/src">
+          <fileset dir="${src.dir}"/>
+    </copy>
+    <!-- vytvori JAR file -->  	
+    <jar destfile="${jar.dir}/${bin.jar.file}" basedir="${build.dir}">
+      <manifest>
+        <attribute name="Main-Class" value="${main-class}" />        
+      </manifest>
+    </jar>
+      	
+  	<delete dir="${build.dir}/doc" />
+  </target>
+	
+  <!-- =========================================================================
+    target: javadoc
+    pomoci javadocu vytvori dokumentaci k programu a ulozi do adresare doc.dir
+  ========================================================================== -->
+  <target name="javadoc">
+  	<mkdir dir="${doc.dir}" />        
+       <javadoc destdir="${doc.dir}">          
+          <fileset dir="${src.dir}/" includes="**/*.java" />
+        </javadoc>  	
+  </target>
+	
+
+</project>
